@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>DeepSeek 本地访问</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+    #response { margin-top: 20px; padding: 10px; border: 1px solid #ddd; min-height: 100px; }
+  </style>
+</head>
+<body>
+  <h1>DeepSeek 本地问答</h1>
+  <input type="text" id="userInput" placeholder="输入问题..." style="width: 70%; padding: 8px;">
+  <button onclick="sendRequest()">发送</button>
+  <div id="response"></div>
+
+  <script>
+    async function sendRequest() {
+      const input = document.getElementById('userInput').value;
+      const responseBox = document.getElementById('response');
+      responseBox.innerHTML = "思考中...";
+
+      try {
+        // 调用 Ollama API
+        const response = await fetch('http://localhost:11434/api/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            model: "deepseek", // 替换为你的模型名称
+            prompt: input,
+            stream: false      // 关闭流式获取完整响应
+          })
+        });
+
+        const data = await response.json();
+        responseBox.innerHTML = data.response || "无返回内容";
+      } catch (error) {
+        responseBox.innerHTML = `错误: ${error.message}`;
+      }
+    }
+  </script>
+</body>
+</html>
